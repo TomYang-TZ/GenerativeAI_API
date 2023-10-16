@@ -12,3 +12,13 @@
 > git checkout main
 > pip install -r requirements.txt  
 > ```  
+
+> ```bash
+> cd GenerativeAI_API  
+> pip install -r requirements.txt
+> ```
+
+## 3. How to use  
+```bash
+python3 src/UI.py
+```

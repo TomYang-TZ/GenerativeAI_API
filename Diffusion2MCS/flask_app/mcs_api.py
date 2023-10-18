@@ -18,11 +18,11 @@ pip install -r requirements.txt
 """
 
 ### Setup credentials for MCS in .env file  
-load_dotenv()
-private_key=os.environ["PRIVATE_KEY"]
-rpc_endpoint="https://polygon-rpc.com"
-api_key = os.environ["API_KEY"]
-access_token = os.environ["ACCESS_TOKEN"]
+# load_dotenv()
+# private_key=os.environ["PRIVATE_KEY"]
+# rpc_endpoint="https://polygon-rpc.com"
+# api_key = os.environ["API_KEY"]
+# access_token = os.environ["ACCESS_TOKEN"]
 
 
 def get_image(url='https://pgmwn8b5xu.meta.crosschain.computer',
@@ -54,7 +54,7 @@ def get_image(url='https://pgmwn8b5xu.meta.crosschain.computer',
     image = Image.open(io.BytesIO(base64.b64decode(r['images'][0])))
     return image
 
-def initialize_client(chain="polygon.mumbai",api_key=api_key,access_token=access_token):
+def initialize_client(api_key,access_token,chain="polygon.mumbai",):
     mcs_api = APIClient(api_key, chain, access_token)
     return BucketAPI(mcs_api)
 
@@ -67,18 +67,19 @@ def save_to_MCS_bucket(bucket_client, bucket_name="diffusion2",file_path="output
     file_data = bucket_client.upload_file(bucket_name, name , file_path) 
     if not file_data:
         print("upload failed")
-        return 
+        raise Exception("upload failed") 
     file_data = json.loads(file_data.to_json())
     print(file_data)
     return file_data["ipfs_url"]  
     
-def pipeline(prompt, access_token, api_key, folder_name, image_name, seed,initialize_bucket=True,overwrite_file=False,url='https://pgmwn8b5xu.meta.crosschain.computer'):
+def pipeline(prompt, access_token, api_key, folder_name, image_name, seed,
+             initialize_bucket=True,overwrite_file=False,url='https://pgmwn8b5xu.meta.crosschain.computer',file_path="output.png"):
     img = get_image(prompt=prompt,url=url,seed=seed)
-    img.save("output.png")  
+    img.save(file_path)  
     bucket_client = initialize_client(api_key=api_key,access_token=access_token)
 
     img_link = save_to_MCS_bucket(bucket_client,initialize_bucket=initialize_bucket,overwrite_file=overwrite_file,
-                                  bucket_name=folder_name,name=image_name)
+                                  bucket_name=folder_name,file_path=file_path,name=image_name)
 
     return img_link
 

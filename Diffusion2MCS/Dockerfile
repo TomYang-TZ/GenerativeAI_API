@@ -11,5 +11,7 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt  
 
 WORKDIR /app/flask_app
+
+EXPOSE 5000 9999
 # Run the Python script when the container launches
-CMD ["python", "app.py"]
+CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
